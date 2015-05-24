@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">배달해Dream</string>
+
+
+    <string name="title_section1">메뉴</string>
+    <string name="title_section2">검색</string>
+    <string name="title_section3">즐겨찾기</string>
+    <string name="title_section4">. . .</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
