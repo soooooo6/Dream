@@ -43,14 +43,13 @@ public class View_list extends ActionBarActivity {
         this.setTitle(intent.getStringExtra("TITLE"));
         TextView txtOutput = (TextView)findViewById(R.id.vl_textView1);
         txtOutput.setText(str);
-        String aa = null;
+        HttpResponse  aa = null;
         try {
-            aa = new ServerConnector().executeClient();
-            Log.d("Resta : : : ",aa);
+            new ServerConnector(this).test("a");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Toast.makeText(getApplicationContext(), aa, Toast.LENGTH_LONG).show();
+
     }
     
 
