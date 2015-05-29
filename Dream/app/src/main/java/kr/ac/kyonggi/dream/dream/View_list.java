@@ -1,37 +1,23 @@
 package kr.ac.kyonggi.dream.dream;
 
-
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
+import org.json.simple.JSONObject;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
+import java.sql.SQLException;
 
 public class View_list extends ActionBarActivity {
     static int RECEIVE_EVENT = 1000;
-
-    private ListView m_ListView;
-    private ArrayAdapter<String> m_Adapter;
+    // DB
+    private DbOpenHelper mDbOpenHelper;
+    private Cursor mCursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,16 +27,38 @@ public class View_list extends ActionBarActivity {
         Intent intent = getIntent();
         String str = intent.getStringExtra("PARAM1");
         this.setTitle(intent.getStringExtra("TITLE"));
-        TextView txtOutput = (TextView) findViewById(R.id.vl_textView1);
+        TextView txtOutput = (TextView)findViewById(R.id.vl_textView1);
         txtOutput.setText(str);
 
-        ShowList();
+        // JSONObject parsing?
+        JSONObject[] restas = null;
+        restas = DreamData.getRestaList(0,20);
+        String [] id, name, phone;
+        id = new String[restas.length];
+        name = new String[restas.length];
+        phone = new String[restas.length];
+        for(int i = 0;i < restas.length; i++) {
+            id[i] = String.valueOf(restas[i].get("id"));
+            name[i] = String.valueOf(restas[i].get("name"));
+            phone[i] = String.valueOf(restas[i].get("phone"));
+        }
+
+        DBInsert(id, name, phone);  // DB Create and Open
+
+
     }
 
-    public void ShowList() {
-
+    private void DBInsert(String[] id, String[] name, String[] phone){
+        // DB Create and Open
+        mDbOpenHelper = new DbOpenHelper(this);
+        try {
+            mDbOpenHelper.open();
+            mDbOpenHelper.insertColumn(id, name, phone);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.d("DB", "open fail");
+        }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -72,5 +80,11 @@ public class View_list extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mDbOpenHelper.close();
+        super.onDestroy();
     }
 }
