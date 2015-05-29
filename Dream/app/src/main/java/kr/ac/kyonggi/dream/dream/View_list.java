@@ -41,18 +41,15 @@ public class View_list extends ActionBarActivity {
         Intent intent = getIntent();
         String str = intent.getStringExtra("PARAM1");
         this.setTitle(intent.getStringExtra("TITLE"));
-        TextView txtOutput = (TextView)findViewById(R.id.vl_textView1);
+        TextView txtOutput = (TextView) findViewById(R.id.vl_textView1);
         txtOutput.setText(str);
-        String aa = null;
-        try {
-            aa = new ServerConnector().executeClient();
-            Log.d("Resta : : : ",aa);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Toast.makeText(getApplicationContext(), aa, Toast.LENGTH_LONG).show();
+
+        ShowList();
     }
-    
+
+    public void ShowList() {
+
+    }
 
 
     @Override
