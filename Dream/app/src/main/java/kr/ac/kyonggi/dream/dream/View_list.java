@@ -2,11 +2,13 @@ package kr.ac.kyonggi.dream.dream;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.simple.JSONObject;
@@ -18,8 +20,14 @@ public class View_list extends ActionBarActivity {
     // DB
     private DbOpenHelper mDbOpenHelper;
     private Cursor mCursor;
+    final static String dbName = DbOpenHelper.DATABASE_NAME;
+    final static int dbVersion = DbOpenHelper.DATABASE_VERSION;
 
-    @Override
+    // DB select
+    Cursor cursor;
+    DBAdapter myAdapter;
+    final static String querySelectAll = String.format("SELECT * FROM %s", DBUpdate.CreateDB._TABLENAME);
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_list);
@@ -43,9 +51,22 @@ public class View_list extends ActionBarActivity {
             phone[i] = String.valueOf(restas[i].get("phone"));
         }
 
-        DBInsert(id, name, phone);  // DB Create and Open
+//        DBInsert(id, name, phone);  // DB Create and Open
+        mDbOpenHelper = new DbOpenHelper(this);
+        try {
+            mDbOpenHelper.open();
+            mDbOpenHelper.insertColumn(id, name, phone);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.d("DB", "open fail");
+        }
 
+        // DB Select
+        ListView list = (ListView) findViewById(R.id.vl_listView);
+        cursor = DbOpenHelper.mDB.rawQuery(querySelectAll, null);
+        myAdapter = new DBAdapter(this, cursor);
 
+        list.setAdapter(myAdapter);
     }
 
     private void DBInsert(String[] id, String[] name, String[] phone){

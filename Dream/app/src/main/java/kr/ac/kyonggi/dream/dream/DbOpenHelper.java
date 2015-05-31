@@ -1,6 +1,7 @@
 package kr.ac.kyonggi.dream.dream;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -12,8 +13,8 @@ import java.sql.SQLException;
  * Created by sookyung on 2015-05-29.
  */
 public class DbOpenHelper {
-    private static final String DATABASE_NAME = "restlist.db";
-    private static final int DATABASE_VERSION = 1;
+    public static final String DATABASE_NAME = "restlist.db";
+    public static final int DATABASE_VERSION = 1;
     public static SQLiteDatabase mDB;
     public DatabaseHelper mDBHelper;
     private Context mCtx;
