@@ -12,11 +12,13 @@ public class DBUpdate {
         public static final String ID = "_id";
         public static final String NAME = "name";
         public static final String PHONE = "phone";
+        public static final String CATEGORY = "category";
         public static final String _TABLENAME = "R_list";
         public static final String _CREATE =
                 "create table " + _TABLENAME + " ("
                 + ID + " text primary key, "
                 + NAME + " text not null , "
-                + PHONE + " text not null );";
+                + PHONE + " text not null , "
+                + CATEGORY + " smallint )";
     }
 }

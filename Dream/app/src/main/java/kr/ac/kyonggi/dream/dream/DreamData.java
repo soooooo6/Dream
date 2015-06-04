@@ -1,20 +1,36 @@
 package kr.ac.kyonggi.dream.dream;
 
+import android.os.Handler;
+import android.util.Log;
+import android.widget.Toast;
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * Created by samsung on 2015-05-29.
  */
 public class DreamData {
     private String USER_AGENT = "Mozilla/5.0";
+    // 책 예제
+    static Handler handler = new Handler();
 
-    public static JSONObject[] getRestaList(int index, int count){
+    public static JSONObject[] getRestaList(int index, int count, int category){
         JSONParser parse = new JSONParser();
-        //String response = getRestaList(index,count);
-        String response = "[{\"id\":\"1090\",\"name\":\"피자집0\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1091\",\"name\":\"피자집1\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1092\",\"name\":\"피자집2\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1093\",\"name\":\"피자집3\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1094\",\"name\":\"피자집4\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1095\",\"name\":\"피자집5\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1096\",\"name\":\"피자집6\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1097\",\"name\":\"피자집7\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1098\",\"name\":\"피자집8\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1099\",\"name\":\"피자집9\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1100\",\"name\":\"피자집10\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1101\",\"name\":\"피자집11\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1102\",\"name\":\"피자집12\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1103\",\"name\":\"피자집13\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1104\",\"name\":\"피자집14\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1105\",\"name\":\"피자집15\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1106\",\"name\":\"피자집16\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1107\",\"name\":\"피자집17\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1108\",\"name\":\"피자집18\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"},{\"id\":\"1109\",\"name\":\"피자집19\",\"phone\":\"010-0000-0000\",\"image_path\":\"test.jpg\"}]";
+
+//        String urlStr = "http://create32.ddns.net:9080/public_html/dream/RestaListJson.php?index="+index+"&count="+count+"&category="+category;
+        String urlStr = "http://1.224.193.99:9080/public_html/dream/RestaListJson.php?index="+index+"&count="+count+"&category="+category;
+        ConnectThread thread = new ConnectThread(urlStr);
+        thread.start();
+
+        String response = ConnectThread.request(urlStr);
 
         JSONArray restasObj = null;
         try {
@@ -28,8 +44,60 @@ public class DreamData {
             restas[i] =  (JSONObject)restasObj.get(i);
         }
 
-//      JSONObject jsonObj = (JSONObject) JSONValue.parse(value);
-//      String test = (String)jsonObj.get("key1");
         return restas;
+    }
+
+    static class ConnectThread extends Thread {
+        String urlStr;
+
+        public ConnectThread(String inStr){
+            urlStr = inStr;
+        }
+        public void run() {
+            try {
+                final String output = request(urlStr);
+                handler.post(new Runnable(){
+                    public void run() {
+                        System.out.println(output);
+                    }
+                });
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        private static String request(String urlStr){
+            StringBuilder output = new StringBuilder();
+            try {
+                URL url = new URL(urlStr);
+
+                HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                if(conn != null){
+                    conn.setConnectTimeout(10000);
+                    conn.setRequestMethod("GET");
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+
+                    int resCode = conn.getResponseCode();
+                    if(resCode == HttpURLConnection.HTTP_OK){
+                        BufferedReader reader = new BufferedReader(
+                                new InputStreamReader(conn.getInputStream()));
+                        String line = null;
+                        while(true) {
+                            line = reader.readLine();
+                            if(line == null){
+                                break;
+                            }
+                            output.append(line+"\n");
+                        }
+                        reader.close();
+                        conn.disconnect();
+                    }
+                }
+            } catch(Exception ex) {
+                Log.e("SampleHTTP", "Exception processing.", ex);
+                ex.printStackTrace();
+            }
+            return output.toString();
+        }
     }
 }

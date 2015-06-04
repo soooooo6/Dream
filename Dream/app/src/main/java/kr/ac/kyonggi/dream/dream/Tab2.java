@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 @SuppressLint("ValidFragment")
 public class Tab2 extends Fragment {
 		Context mContext;
-		
+
 		public Tab2(Context context) {
 			mContext = context;
 		}
@@ -20,8 +20,6 @@ public class Tab2 extends Fragment {
 		public View onCreateView(LayoutInflater inflater, 
 				ViewGroup container, Bundle savedInstanceState) {
 			View view = inflater.inflate(R.layout.tab2, null);
-			
 	    	return view;
 		}
-
 }

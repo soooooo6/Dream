@@ -3,7 +3,6 @@ package kr.ac.kyonggi.dream.dream;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -24,7 +23,6 @@ public class Tab1 extends Fragment {
 
 		public Tab1(Context context) {
 			mContext = context;
-//            SQLiteDatabase db;
         }
 		
 		@Override
@@ -62,20 +60,21 @@ public class Tab1 extends Fragment {
                 }
 
                 final String title1 = title[i];
+                final int category = i;
 
                 //intent
-                btn[i].setOnClickListener(new View.OnClickListener() {
+                btn[category].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), View_list.class);
                         intent.putExtra("PARAM1", title1);
                         intent.putExtra("TITLE", title1);
+                        intent.putExtra("Category", category+1);
+                        Log.d("category", String.valueOf(category + 1));
                         startActivityForResult(intent, RECEIVE_EVENT);
                     }
                 });
-
             }
             return view;
 		}
-
 }

@@ -35,6 +35,7 @@ public class DbOpenHelper {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             db.execSQL("DROP TABLE IF EXISTS "+DBUpdate.CreateDB._TABLENAME);
             onCreate(db);
+            Log.d("Upgrading DB from", "version"+oldVersion+" to "+newVersion+".");
         }
     }
 
@@ -48,14 +49,14 @@ public class DbOpenHelper {
         return this;
     }
 
-    public void insertColumn(String[] id, String[] name, String[] phone) {
+    public void insertColumn(String[] id, String[] name, String[] phone, int category) {
         mDB.beginTransaction();
         try {
             for (int i = 0; i < id.length; i++) {
                 String sql = "insert into "+DBUpdate.CreateDB._TABLENAME +"("+
                         DBUpdate.CreateDB.ID+","+DBUpdate.CreateDB.NAME + ","+
-                        DBUpdate.CreateDB.PHONE+")"+" values ('"+
-                        id[i]+"','" + name[i] + "','" + phone[i] + "')";
+                        DBUpdate.CreateDB.PHONE+","+DBUpdate.CreateDB.CATEGORY +")"
+                        +" values ('" + id[i]+"','" + name[i] + "','" + phone[i] + "'," + category + ")";
                 mDB.execSQL(sql);
             }
             // Database transaction success

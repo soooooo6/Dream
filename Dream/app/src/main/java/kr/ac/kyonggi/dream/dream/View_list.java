@@ -1,18 +1,31 @@
 package kr.ac.kyonggi.dream.dream;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.simple.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.SQLException;
 
 public class View_list extends ActionBarActivity {
@@ -26,7 +39,7 @@ public class View_list extends ActionBarActivity {
     // DB select
     Cursor cursor;
     DBAdapter myAdapter;
-    final static String querySelectAll = String.format("SELECT * FROM %s", DBUpdate.CreateDB._TABLENAME);
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,30 +48,46 @@ public class View_list extends ActionBarActivity {
         Intent intent = getIntent();
         String str = intent.getStringExtra("PARAM1");
         this.setTitle(intent.getStringExtra("TITLE"));
+        int category = intent.getIntExtra("Category", 1);
         TextView txtOutput = (TextView)findViewById(R.id.vl_textView1);
         txtOutput.setText(str);
 
-        // JSONObject parsing?
-        JSONObject[] restas = null;
-        restas = DreamData.getRestaList(0,20);
-        String [] id, name, phone;
-        id = new String[restas.length];
-        name = new String[restas.length];
-        phone = new String[restas.length];
-        for(int i = 0;i < restas.length; i++) {
-            id[i] = String.valueOf(restas[i].get("id"));
-            name[i] = String.valueOf(restas[i].get("name"));
-            phone[i] = String.valueOf(restas[i].get("phone"));
-        }
-
-//        DBInsert(id, name, phone);  // DB Create and Open
+        // DB select query
+        final String querySelectAll = String.format("SELECT * FROM %s where %s=%d", DBUpdate.CreateDB._TABLENAME, DBUpdate.CreateDB.CATEGORY, category);
         mDbOpenHelper = new DbOpenHelper(this);
-        try {
-            mDbOpenHelper.open();
-            mDbOpenHelper.insertColumn(id, name, phone);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            Log.d("DB", "open fail");
+
+        if( isNetworkConnected(this)) {
+            // JSONObject parsing?
+            JSONObject[] restas = null;
+            restas = DreamData.getRestaList(0, 20, category);
+            String[] id, name, phone;
+            id = new String[restas.length];
+            name = new String[restas.length];
+            phone = new String[restas.length];
+            for (int i = 0; i < restas.length; i++) {
+                id[i] = String.valueOf(restas[i].get("id"));
+                name[i] = String.valueOf(restas[i].get("name"));
+                phone[i] = String.valueOf(restas[i].get("phone"));
+            }
+
+            //        DBInsert(id, name, phone);  // DB Create and Open
+            try {
+                mDbOpenHelper.open();
+                mDbOpenHelper.insertColumn(id, name, phone, category);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                Log.d("DB", "open fail");
+            }
+        } else {
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("네트워크 연결 오류").setMessage("네트워크 연결 상태 확인 후 다시 시도해 주십시요.")
+                    .setPositiveButton("확인", new DialogInterface.OnClickListener(){
+                        @Override
+                        public void onClick( DialogInterface dialog, int which ){
+                            finish();
+                        }
+                    }).show();
         }
 
         // DB Select
@@ -67,18 +96,16 @@ public class View_list extends ActionBarActivity {
         myAdapter = new DBAdapter(this, cursor);
 
         list.setAdapter(myAdapter);
-    }
-
-    private void DBInsert(String[] id, String[] name, String[] phone){
-        // DB Create and Open
-        mDbOpenHelper = new DbOpenHelper(this);
-        try {
-            mDbOpenHelper.open();
-            mDbOpenHelper.insertColumn(id, name, phone);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            Log.d("DB", "open fail");
-        }
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(View_list.this, Rest_info.class);
+//                intent.putExtra("PARAM1", "test");
+//                intent.putExtra("TITLE", "test1");
+//                startActivityForResult(intent, RECEIVE_EVENT);
+                Toast.makeText(getApplicationContext(), "test"+myAdapter.getItemId(position), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
@@ -107,5 +134,22 @@ public class View_list extends ActionBarActivity {
     protected void onDestroy() {
         mDbOpenHelper.close();
         super.onDestroy();
+    }
+
+    // 인터넷 연결 상태 확인
+    public boolean isNetworkConnected(Context context){
+        boolean isConnected = false;
+
+        ConnectivityManager manager =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mobile = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        NetworkInfo wifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if (mobile.isConnected() || wifi.isConnected()){
+            isConnected = true;
+        }else{
+            isConnected = false;
+        }
+        return isConnected;
     }
 }
