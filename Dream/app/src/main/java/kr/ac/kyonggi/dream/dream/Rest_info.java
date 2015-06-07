@@ -30,7 +30,7 @@ public class Rest_info extends ActionBarActivity {
     // DB select
     private DbOpenHelper mDbOpenHelper;
     Cursor cursor;
-    DBAdapter myAdapter;
+    MenuDBAdapter myAdapter;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,10 +50,7 @@ public class Rest_info extends ActionBarActivity {
         cursor.moveToFirst();
         title = cursor.getString(cursor.getColumnIndex("name"));    // 가게 이름
         this.setTitle(title);
-        TextView txtOutput = (TextView)findViewById(R.id.ri_textView);
-        txtOutput.setText(title);
 
-        if( isNetworkConnected(this)) {
             // JSONObject parsing?
             JSONObject[] restas = null;
             restas = DreamData.getMenuList(index);
@@ -62,57 +59,52 @@ public class Rest_info extends ActionBarActivity {
             _id = new int[restas.length];
             name = new String[restas.length];
             price = new int[restas.length];
+
             for (int i = 0; i < restas.length; i++) {
                 _id[i] = Integer.parseInt(id);
                 name[i] = String.valueOf(restas[i].get("name"));
-//                restas[i].put("price", price[i]);
-                price[i] = (int) restas[i].get("price");
-                Log.d("menu", _id[i]+","+name[i]+","+restas[i]);
+                price[i] = Integer.parseInt(String.valueOf(restas[i].get("price")));
+                Log.d("menu", _id[i]+","+name[i]+","+price[i]+","+restas[i]);
             }
-            Log.d("menu", "parse end");
-            try {
+                try {
                 mDbOpenHelper.open();
                 mDbOpenHelper.insertColumn(_id, name, price);
             } catch (SQLException e) {
                 e.printStackTrace();
                 Log.d("DB", "open fail");
             }
-        } else {
-            new AlertDialog.Builder(this)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setTitle("네트워크 연결 오류").setMessage("네트워크 연결 상태 확인 후 다시 시도해 주십시요.")
-                    .setPositiveButton("확인", new DialogInterface.OnClickListener(){
-                        @Override
-                        public void onClick( DialogInterface dialog, int which ){
-                            finish();
-                        }
-                    }).show();
-        }
 
         // DB Select
+//        ListView list = (ListView) findViewById(R.id.ri_listView);
+//        cursor = executeRawQueryParam(String.valueOf(index));
+//        startManagingCursor(cursor);
+//
+//        String[] columns = new String[] {DBUpdate.MenuDB.NAME, DBUpdate.MenuDB.PRICE};
+//        int[] to = new int[] {R.id.tv_name, R.id.tv_phone};
+////        int[] to = new int[] {android.R.id.text1, android.R.id.text2};
+//        SimpleCursorAdapter mAdapter = new SimpleCursorAdapter(this, R.layout.rest_info, cursor, columns, to);
+////        SimpleCursorAdapter mAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cursor, columns, to);
+//        list.setAdapter(mAdapter);
         ListView list = (ListView) findViewById(R.id.ri_listView);
-//        String querySelectAll = String.format("SELECT * FROM %s where %s=%d",
-//                DBUpdate.MenuDB._TABLENAME, DBUpdate.MenuDB._ID, index);
-//        cursor = DbOpenHelper.mDB.rawQuery(querySelectAll, null);
-        cursor = executeRawQueryParam(String.valueOf(index));
-        startManagingCursor(cursor);
-
-        String[] columns = new String[] {DBUpdate.MenuDB.NAME, DBUpdate.MenuDB.PRICE};
-        int[] to = new int[] {R.id.ri_name, R.id.ri_price};
-        SimpleCursorAdapter mAdapter = new SimpleCursorAdapter(this, R.layout.rest_info, cursor, columns, to);
-        list.setAdapter(mAdapter);
-    }
-
-    private Cursor executeRawQueryParam(String index){
-        System.out.println("\nexecuteRawQureryParam called.\n");
-
         String SQL = "select * from " + DBUpdate.MenuDB._TABLENAME
-                + " where _id > ?";
-        String[] args = {index};
-        Cursor c1 = DbOpenHelper.mDB.rawQuery(SQL, args);
+                + " where _id = ?";
+        String[] args = {String.valueOf(index)};
+        cursor = DbOpenHelper.mDB.rawQuery(SQL, args);
+        myAdapter = new MenuDBAdapter(this, cursor);
 
-        return c1;
+        list.setAdapter(myAdapter);
     }
+
+//    private Cursor executeRawQueryParam(String index){
+//        System.out.println("\nexecuteRawQureryParam called.\n");
+//
+//        String SQL = "select * from " + DBUpdate.MenuDB._TABLENAME
+//                + " where _id = ?";
+//        String[] args = {index};
+//        Cursor c1 = DbOpenHelper.mDB.rawQuery(SQL, args);
+//
+//        return c1;
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

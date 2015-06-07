@@ -9,30 +9,31 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 /**
- * Created by sookyung on 2015-05-31.
+ * Created by sookyunt on 2015-06-08.
+ * 이 클래스는 만들기 싫었는데...
  */
-public class DBAdapter extends CursorAdapter {
+public class MenuDBAdapter extends CursorAdapter {
 
-    public DBAdapter(Context context, Cursor c) {
+public MenuDBAdapter(Context context, Cursor c) {
         super(context, c);
-    }
+        }
 
-    @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+@Override
+public void bindView(View view, Context context, Cursor cursor) {
         TextView tvName = (TextView) view.findViewById(R.id.tv_name);
         TextView tvPhone = (TextView) view.findViewById(R.id.tv_phone);
 
-        String name = cursor.getString(cursor.getColumnIndex(DBUpdate.CreateDB.NAME));
-        String phone = cursor.getString(cursor.getColumnIndex(DBUpdate.CreateDB.PHONE));
+        String name = cursor.getString(cursor.getColumnIndex(DBUpdate.MenuDB.NAME));
+        String phone = cursor.getString(cursor.getColumnIndex(DBUpdate.MenuDB.PRICE));
 
         tvName.setText(name);
         tvPhone.setText(phone);
-    }
+        }
 
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+@Override
+public View newView(Context context, Cursor cursor, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View v = inflater.inflate(R.layout.list_item, parent, false);
         return v;
-    }
+        }
 }
