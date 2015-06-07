@@ -29,11 +29,13 @@ public class DbOpenHelper {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(DBUpdate.CreateDB._CREATE);
+            db.execSQL(DBUpdate.MenuDB._CREATE);
         }
         // 버전이 업데이트 되었을 경우 DB를 다시 만들어 준다.
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             db.execSQL("DROP TABLE IF EXISTS "+DBUpdate.CreateDB._TABLENAME);
+            db.execSQL("DROP TABLE IF EXISTS "+DBUpdate.MenuDB._TABLENAME);
             onCreate(db);
             Log.d("Upgrading DB from", "version"+oldVersion+" to "+newVersion+".");
         }
@@ -69,6 +71,27 @@ public class DbOpenHelper {
             mDB.endTransaction();
         }
         Log.d("DB", "insert success");
+    }
+
+    public void insertColumn(int[] id, String[] name, int[] price) {
+        mDB.beginTransaction();
+        try {
+            for (int i = 0; i < id.length; i++) {
+                String sql = "insert into "+DBUpdate.MenuDB._TABLENAME +"("+
+                        DBUpdate.MenuDB.ID+","+DBUpdate.MenuDB.NAME + ","+ DBUpdate.MenuDB.PRICE +")"+
+                        " values ('" + id[i]+"','" + name[i] + "','" + price[i] + "')";
+                mDB.execSQL(sql);
+            }
+            // Database transaction success
+            mDB.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d("DB", "insert error (menu)");
+        } finally {
+            // Database transaction close
+            mDB.endTransaction();
+        }
+        Log.d("DB", "insert success (menu)");
     }
 
     public void close() {

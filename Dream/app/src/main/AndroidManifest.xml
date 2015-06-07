@@ -21,6 +21,9 @@
         <activity
             android:name=".View_list">
         </activity>
+        <activity
+            android:name=".Rest_info">
+        </activity>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

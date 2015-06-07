@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 @SuppressLint("ValidFragment")
@@ -30,34 +31,21 @@ public class Tab1 extends Fragment {
 				ViewGroup container, Bundle savedInstanceState) {
 			View view = inflater.inflate(R.layout.tab1, null);
 
-            Button btn[] = new Button[btnCount];
-            LinearLayout mainLayout = (LinearLayout) view.findViewById(R.id.listLinearLayer);
-            mainLayout.setOrientation(LinearLayout.VERTICAL);
+            ImageButton btn[] = new ImageButton[btnCount];
+            btn[0] = (ImageButton) view.findViewById(R.id.button01);
+            btn[1] = (ImageButton) view.findViewById(R.id.button02);
+            btn[2] = (ImageButton) view.findViewById(R.id.button03);
+            btn[3] = (ImageButton) view.findViewById(R.id.button04);
+            btn[4] = (ImageButton) view.findViewById(R.id.button05);
+            btn[5] = (ImageButton) view.findViewById(R.id.button06);
+            btn[6] = (ImageButton) view.findViewById(R.id.button07);
+            btn[7] = (ImageButton) view.findViewById(R.id.button08);
 
-            LinearLayout currentLayout = new LinearLayout(getActivity());
-            currentLayout.setOrientation(LinearLayout.HORIZONTAL);
-
-            mainLayout.addView(currentLayout);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
             for(i = 0 ; i < btn.length; i++) {
 
-                btn[i] = new Button(getActivity());
-                btn[i].setText(title[i]);
-                btn[i].setLayoutParams(params);
-                btn[i].setWidth(600);
-                btn[i].setHeight(600);
-                btn[i].setTextSize(11);
-                btn[i].setId(i);
+//                btn[i] = new ImageButton(getActivity());
 
-                currentLayout.addView(btn[i]);
-                if((i+1) % 2 == 0) {
-                    currentLayout = new LinearLayout(getActivity());
-                    currentLayout.setOrientation(LinearLayout.HORIZONTAL);
-                    mainLayout.addView(currentLayout);
-                }
+                btn[i].setId(i);
 
                 final String title1 = title[i];
                 final int category = i;

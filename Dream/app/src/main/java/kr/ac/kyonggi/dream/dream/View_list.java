@@ -99,17 +99,16 @@ public class View_list extends ActionBarActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(View_list.this, Rest_info.class);
-//                intent.putExtra("PARAM1", "test");
-//                intent.putExtra("TITLE", "test1");
-//                startActivityForResult(intent, RECEIVE_EVENT);
-                Toast.makeText(getApplicationContext(), "test"+myAdapter.getItemId(position), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "test"+ myAdapter.getItemId(position), Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(View_list.this, Rest_info.class);
+                intent.putExtra("PARAM1", String.valueOf(myAdapter.getItemId(position)));
+                startActivityForResult(intent, RECEIVE_EVENT);
             }
         });
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+      public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;

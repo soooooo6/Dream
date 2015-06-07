@@ -21,4 +21,17 @@ public class DBUpdate {
                 + PHONE + " text not null , "
                 + CATEGORY + " smallint )";
     }
+
+    public static final class MenuDB implements BaseColumns {
+        public static final String ID = "_id";
+        public static final String NAME = "name";
+        public static final String PRICE = "price";
+        public static final String _TABLENAME = "M_list";
+        public static final String _CREATE =
+                "create table " + _TABLENAME + " ("
+                + ID + " integer , "
+                + NAME + " text , "
+                + PRICE + " integer not null , "
+                + "PRIMARY KEY("+ID+","+NAME+"))";
+    }
 }
