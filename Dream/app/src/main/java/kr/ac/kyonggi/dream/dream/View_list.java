@@ -40,6 +40,9 @@ public class View_list extends ActionBarActivity {
     Cursor cursor;
     DBAdapter myAdapter;
 
+    // Parsing URL
+    String urlStr = "http://1.224.193.99:9080/public_html/dream/MenuListJson.php?id=";
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,8 +52,6 @@ public class View_list extends ActionBarActivity {
         String str = intent.getStringExtra("PARAM1");
         this.setTitle(intent.getStringExtra("TITLE"));
         int category = intent.getIntExtra("Category", 1);
-        TextView txtOutput = (TextView)findViewById(R.id.vl_textView1);
-        txtOutput.setText(str);
 
         // DB select query
         final String querySelectAll = String.format("SELECT * FROM %s where %s=%d", DBUpdate.CreateDB._TABLENAME, DBUpdate.CreateDB.CATEGORY, category);
@@ -60,6 +61,7 @@ public class View_list extends ActionBarActivity {
             // JSONObject parsing?
             JSONObject[] restas = null;
             restas = DreamData.getRestaList(0, 20, category);
+//            restas = new JSONObject[0]; // 바꿔야함
             String[] id, name, phone;
             id = new String[restas.length];
             name = new String[restas.length];

@@ -20,6 +20,9 @@ public class DreamData {
     // 책 예제
     static Handler handler = new Handler();
 
+    /*
+    *   Restaurant List Parsing
+    * */
     public static JSONObject[] getRestaList(int index, int count, int category){
         JSONParser parse = new JSONParser();
 
@@ -45,6 +48,9 @@ public class DreamData {
         return restas;
     }
 
+    /*
+    *   Restaurant's Menu List Parsing
+    * */
     public static JSONObject[] getMenuList(int id){
         JSONParser parse = new JSONParser();
 

@@ -1,10 +1,9 @@
 package kr.ac.kyonggi.dream.dream;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -13,10 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.simple.JSONObject;
@@ -27,6 +24,8 @@ import java.sql.SQLException;
  * Created by sookyung on 2015-06-01.
  */
 public class Rest_info extends ActionBarActivity {
+    // intent
+    static int RECEIVE_EVENT = 1000;
     // DB select
     private DbOpenHelper mDbOpenHelper;
     Cursor cursor;
@@ -41,7 +40,17 @@ public class Rest_info extends ActionBarActivity {
         String title = "";
         int index = Integer.parseInt(id);
 
-        // DB Select
+        // button
+        findViewById(R.id.button).setOnClickListener(
+                new Button.OnClickListener() {
+                    public void onClick(View v){
+                        Intent intent = new Intent(getApplicationContext(), View_list.class);
+                        startActivityForResult(intent, RECEIVE_EVENT);
+                    }
+                }
+        );
+
+        // DB Select (restaurant name)
         mDbOpenHelper = new DbOpenHelper(this);
         final String querySelectName = String.format("SELECT %s FROM %s where %s=%d",
                 DBUpdate.CreateDB.NAME, DBUpdate.CreateDB._TABLENAME, DBUpdate.CreateDB._ID, index);
@@ -50,6 +59,7 @@ public class Rest_info extends ActionBarActivity {
         cursor.moveToFirst();
         title = cursor.getString(cursor.getColumnIndex("name"));    // 가게 이름
         this.setTitle(title);
+        this.setTitleColor(Color.RED);
 
             // JSONObject parsing?
             JSONObject[] restas = null;
@@ -64,7 +74,7 @@ public class Rest_info extends ActionBarActivity {
                 _id[i] = Integer.parseInt(id);
                 name[i] = String.valueOf(restas[i].get("name"));
                 price[i] = Integer.parseInt(String.valueOf(restas[i].get("price")));
-                Log.d("menu", _id[i]+","+name[i]+","+price[i]+","+restas[i]);
+//                Log.d("menu", _id[i]+","+name[i]+","+price[i]+","+restas[i]);
             }
                 try {
                 mDbOpenHelper.open();
@@ -75,16 +85,6 @@ public class Rest_info extends ActionBarActivity {
             }
 
         // DB Select
-//        ListView list = (ListView) findViewById(R.id.ri_listView);
-//        cursor = executeRawQueryParam(String.valueOf(index));
-//        startManagingCursor(cursor);
-//
-//        String[] columns = new String[] {DBUpdate.MenuDB.NAME, DBUpdate.MenuDB.PRICE};
-//        int[] to = new int[] {R.id.tv_name, R.id.tv_phone};
-////        int[] to = new int[] {android.R.id.text1, android.R.id.text2};
-//        SimpleCursorAdapter mAdapter = new SimpleCursorAdapter(this, R.layout.rest_info, cursor, columns, to);
-////        SimpleCursorAdapter mAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cursor, columns, to);
-//        list.setAdapter(mAdapter);
         ListView list = (ListView) findViewById(R.id.ri_listView);
         String SQL = "select * from " + DBUpdate.MenuDB._TABLENAME
                 + " where _id = ?";
@@ -94,17 +94,6 @@ public class Rest_info extends ActionBarActivity {
 
         list.setAdapter(myAdapter);
     }
-
-//    private Cursor executeRawQueryParam(String index){
-//        System.out.println("\nexecuteRawQureryParam called.\n");
-//
-//        String SQL = "select * from " + DBUpdate.MenuDB._TABLENAME
-//                + " where _id = ?";
-//        String[] args = {index};
-//        Cursor c1 = DbOpenHelper.mDB.rawQuery(SQL, args);
-//
-//        return c1;
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

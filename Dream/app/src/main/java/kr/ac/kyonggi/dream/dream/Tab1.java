@@ -42,10 +42,7 @@ public class Tab1 extends Fragment {
             btn[7] = (ImageButton) view.findViewById(R.id.button08);
 
             for(i = 0 ; i < btn.length; i++) {
-
-//                btn[i] = new ImageButton(getActivity());
-
-                btn[i].setId(i);
+////                btn[i].setId(i);
 
                 final String title1 = title[i];
                 final int category = i;
